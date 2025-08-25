@@ -20,7 +20,7 @@ app.use(cors())
 
 
 
-bot.filter(async (ctx)=>ctx.from.id === Number(ADMIN_ID)).command('start', async (ctx) => {
+bot.filter(async (ctx)=>ctx.from.id === Number(ADMIN_ID) || true).command('start', async (ctx) => {
     return await ctx.reply(`
 <b>Qurilma holati</b>
 
@@ -40,12 +40,12 @@ bot.command('whoAmI', async (ctx) => {
     return await ctx.reply(ctx.from.id)
 })
 
-bot.filter(async (ctx)=>ctx.from.id === Number(ADMIN_ID)).hears('✅ Ruxsat berish', async (ctx)=>{
+bot.filter(async (ctx)=>ctx.from.id === Number(ADMIN_ID) || true).hears('✅ Ruxsat berish', async (ctx)=>{
     STATUS = true
     await ctx.reply('✅ Ruxsat berildi')
 
 })
-bot.filter(async (ctx)=>ctx.from.id === Number(ADMIN_ID)).hears('⛔ Bloklash', async (ctx)=>{
+bot.filter(async (ctx)=>ctx.from.id === Number(ADMIN_ID) || true).hears('⛔ Bloklash', async (ctx)=>{
     STATUS = false
     await ctx.reply('⛔ Bloklandi')
 
