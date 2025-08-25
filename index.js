@@ -1,16 +1,16 @@
 import express from "express"
-import { Bot, webhookCallback } from "grammy"
+import {Bot, Keyboard, webhookCallback} from "grammy"
 import dotenv from "dotenv"
 import cors from 'cors'
 import {configComposer, clientComposer} from "./composer/index.js"
-import "./config/mongodbConfig.js"
 
 
 dotenv.config()
-
+let STATUS = true
 const PORT = process.env.PORT || 3000
 const BASE_URL = process.env.BASE_URL
 const TOKEN = process.env.BOT_TOKEN
+const ADMIN_ID = process.env.ADMIN_ID
 
 
 const bot = new Bot(TOKEN)
@@ -18,13 +18,42 @@ const app = express()
 app.use(express.json())
 app.use(cors())
 
-bot.use(configComposer)
-bot.use(clientComposer)
+
+
+bot.filter(async (ctx)=>ctx.from.id === Number(ADMIN_ID)).command('start', async (ctx) => {
+    return await ctx.reply(`
+<b>Qurilma holati</b>
+
+HOLATI: <b>${STATUS? '✅ Ruxsat berilgan' : '⛔  Bloklangan'}  </b>
+    
+    `, {
+        parse_mode:"HTML",
+        reply_markup: new Keyboard()
+            .text('✅ Ruxsat berish')
+            .text('⛔ Bloklash').resized()
+    })
+})
 
 
 
+bot.command('whoAmI', async (ctx) => {
+    return await ctx.reply(ctx.from.id)
+})
 
+bot.filter(async (ctx)=>ctx.from.id === Number(ADMIN_ID)).hears('✅ Ruxsat berish', async (ctx)=>{
+    STATUS = true
+    await ctx.reply('✅ Ruxsat berildi')
 
+})
+bot.filter(async (ctx)=>ctx.from.id === Number(ADMIN_ID)).hears('⛔ Bloklash', async (ctx)=>{
+    STATUS = false
+    await ctx.reply('⛔ Bloklandi')
+
+})
+
+app.get('/status', async (req, res)=>{
+    await res.status(200).send({status:STATUS})
+})
 
 
 
